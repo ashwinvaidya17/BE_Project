@@ -56,7 +56,7 @@ def run_carla_client(args):
                 screen = grab_screen(region=(0,40,800,640))
                 print('FPS: {} seconds'.format(1/(time.time()-last_time)))
                 last_time = time.time()
-                cv2.imshow('window2', screen)
+                cv2.imshow('window2', cv2.cvtColor(screen, cv2.COLOR_BGR2RGB))
                 if cv2.waitKey(25) & 0xFF == ord('q'):
                     cv2.destroyAllWindows()
                     break
