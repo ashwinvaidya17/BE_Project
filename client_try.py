@@ -53,10 +53,10 @@ def run_carla_client(args):
             last_time = time.time()
             # Iterate every frame in the episode.
             for frame in range(0, frames_per_episode):
-                screen = grab_screen(region=(0,40,800,640))
+                screen = grab_screen(region=(0,40,1000,740))
                 print('FPS: {} seconds'.format(1/(time.time()-last_time)))
                 last_time = time.time()
-                cv2.imshow('window2', screen)
+                cv2.imshow('window314', cv2.cvtColor(screen, cv2.COLOR_BGR2RGB))
                 if cv2.waitKey(25) & 0xFF == ord('q'):
                     cv2.destroyAllWindows()
                     break
