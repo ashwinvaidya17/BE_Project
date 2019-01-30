@@ -8,4 +8,3 @@ Make sure model folder and autocar2.ipynb are in the same folder.
 
 ## Note
 Unity and ML-Agents are released under Unity's licence. <br>
-EasyRoads3D is downloaded from [asset store](https://assetstore.unity.com/packages/3d/characters/easyroads3d-free-v3-987).

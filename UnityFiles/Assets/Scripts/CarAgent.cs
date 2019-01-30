@@ -33,7 +33,7 @@ public class CarAgent : Agent
             return;
         }
 
-        if (car.transform.position.y < 0f)
+        if (car.transform.position.y < -0.5f)
         {
             SetReward(-50);
             Done();
@@ -67,7 +67,7 @@ public class CarAgent : Agent
     public override void AgentReset()
     {
         DestroyImmediate(car);
-        car = Instantiate(CarPrefab, new Vector3(972.0f, 8.0f, 552.0f), Quaternion.Euler(0f, -45f, 0f));
+        car = Instantiate(CarPrefab, new Vector3(5f, 1f, 0f), Quaternion.Euler(0f, 0f, 0f));
         car.GetComponent<Rigidbody>().velocity = Vector3.zero;
         agentParameters.agentCameras[0] = car.transform.Find("Camera").GetComponent<Camera>();
         fl = car.transform.Find("Alloys01").Find("fl").GetComponent<WheelCollider>();
