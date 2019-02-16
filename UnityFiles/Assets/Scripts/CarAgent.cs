@@ -55,7 +55,7 @@ public class CarAgent : Agent
         hl.transform.rotation = rotation;
         hr.transform.rotation = rotation;
         forward = Vector3.Normalize(fl.transform.position - hl.transform.position);
-        SetReward(Vector3.Dot(forward, car.GetComponent<Rigidbody>().velocity) / 5);
+        SetReward(Vector3.Dot(forward, car.GetComponent<Rigidbody>().velocity) /5);
         if (GetReward() < 0)
         {
             float reward = GetReward();
