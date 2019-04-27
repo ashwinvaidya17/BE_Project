@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 using MLAgents;
-
+using UnityStandardAssets.Vehicles.Car;
 public class CarAgent : Agent
 {
     public GameObject CarPrefab;
-    public float motorMax, steerMax;
-
-    private GameObject car;
+    public CarController m_controller;
     private Vector3 forward;
-    private WheelCollider fl, fr, hl, hr;
+    private WheelCollider fl, hl; //to get local forward direction
 
+    public Transform []SpawnPoints;
+    private int spawnIndex = 0 ;
+   
     public override void InitializeAgent()
     {
         AgentReset();
@@ -19,68 +20,46 @@ public class CarAgent : Agent
 
     public override void CollectObservations()
     {
-        AddVectorObs(Vector3.Dot(forward, car.GetComponent<Rigidbody>().velocity));
-        
+        AddVectorObs(Vector3.Dot(forward, CarPrefab.GetComponent<Rigidbody>().velocity));
+        //todo
+        //get distance to goal
     }
-
     public override void AgentAction(float[] vectorAction, string textAction)
     {
-        float angle_z = car.transform.rotation.eulerAngles.z > 180 ? 360 - car.transform.rotation.eulerAngles.z : car.transform.rotation.eulerAngles.z;
-        if (Mathf.Abs(angle_z) > 10)
-        {
-            SetReward(0);
-            Done();
-            return;
-        }
-
-        if (car.transform.position.y < -0.5f)
+        forward = Vector3.Normalize(fl.transform.position - hl.transform.position);
+        if (CarPrefab.transform.position.y < -0.5f) // if it falls off
         {
             SetReward(-50);
+            // Debug.Log(-50);
             Done();
             return;
         }
-        float motor = -vectorAction[0];
-        float steer = vectorAction[1] * steerMax;
-        hl.motorTorque = motor * motorMax;
-        hr.motorTorque = motor * motorMax;
-        Vector3 position;
-        Quaternion rotation;
-
-        fl.steerAngle = steer;
-        fr.steerAngle = steer;
-        fl.GetWorldPose(out position, out rotation);
-        fl.transform.rotation = rotation;
-        fr.transform.rotation = rotation;
-        hr.GetWorldPose(out position, out rotation);
-        hl.transform.rotation = rotation;
-        hr.transform.rotation = rotation;
-        forward = Vector3.Normalize(fl.transform.position - hl.transform.position);
-        SetReward(Vector3.Dot(forward, car.GetComponent<Rigidbody>().velocity) /5);
-        if (GetReward() < 0)
-        {
-            float reward = GetReward();
-            reward *= 4;
-            SetReward(reward);
-        }
+        // steer, acc, footbrake, handbrake
+        m_controller.Move(vectorAction[0], vectorAction[1], vectorAction[1],0f);
+       //to-do assign rewards based on velocity
+       SetReward(Vector3.Dot(forward, CarPrefab.GetComponent<Rigidbody>().velocity) /5);
+       if(GetReward() < 0) // penalty for going back
+        SetReward(GetReward()*4);
+    //    Debug.Log(Vector3.Dot(forward, CarPrefab.GetComponent<Rigidbody>().velocity) /5);
+       //to-do assign reward based on proximity to goal
+        
     }
-
     public override void AgentReset()
     {
-        DestroyImmediate(car);
-        car = Instantiate(CarPrefab, new Vector3(5f, 1f, 0f), Quaternion.Euler(0f, 0f, 0f));
-        car.GetComponent<Rigidbody>().velocity = Vector3.zero;
-        agentParameters.agentCameras[0] = car.transform.Find("Camera").GetComponent<Camera>();
-        fl = car.transform.Find("Alloys01").Find("fl").GetComponent<WheelCollider>();
-        fr = car.transform.Find("Alloys01").Find("fr").GetComponent<WheelCollider>();
-        hl = car.transform.Find("Alloys01").Find("hl").GetComponent<WheelCollider>();
-        hr = car.transform.Find("Alloys01").Find("hr").GetComponent<WheelCollider>();
+        CarPrefab.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        CarPrefab.GetComponent<Rigidbody>().angularVelocity = Vector3.zero;
+        fl = CarPrefab.transform.Find("WheelsHubs").Find("WheelHubFrontLeft").GetComponent<WheelCollider>();
+        hl = CarPrefab.transform.Find("WheelsHubs").Find("WheelHubRearLeft").GetComponent<WheelCollider>();
+        m_controller = CarPrefab.GetComponent<CarController>();
+        spawnIndex = Random.Range(0,SpawnPoints.Length);
+        CarPrefab.gameObject.transform.position = SpawnPoints[spawnIndex].position;
+        CarPrefab.gameObject.transform.rotation = Quaternion.identity;
         forward = Vector3.Normalize(fl.transform.position - hl.transform.position);
-        car.SetActive(true);
+        agentParameters.agentCameras[0] = CarPrefab.transform.Find("Camera").GetComponent<Camera>();
     }
 
     public override void AgentOnDone()
     {
         AgentReset();
     }
-
 }

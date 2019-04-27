@@ -1,3 +1,0 @@
-UnityFiles/Assets/ML-Agents/Plugins/Computer/liblibtensorflow.so filter=lfs diff=lfs merge=lfs -text
-UnityFiles/Assets/ML-Agents/Plugins/Computer/libtensorflow.bundle filter=lfs diff=lfs merge=lfs -text
-UnityFiles/Assets/ML-Agents/Plugins/iOS/libtensorflow-core.a filter=lfs diff=lfs merge=lfs -text
