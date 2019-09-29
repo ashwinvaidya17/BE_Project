@@ -4,6 +4,9 @@ Model based on PPO
 
 Unity [ML-Agents](https://github.com/Unity-Technologies/ml-agents/) 0.6.0
 
+## TODO
+Fix PPO implementation.<br>
+Fix Neural net architecture.<br>
 
 ## Note
 Unity and ML-Agents are released under Unity's licence. <br>
